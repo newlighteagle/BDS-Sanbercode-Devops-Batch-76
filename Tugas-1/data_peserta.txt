@@ -1,0 +1,7 @@
+Data Peserta Bootcamp Digital Skill Devops
+1. Nama: Sofyan Agus Salim
+2. Email: sofyan.agus@gmail.com
+3. Sistem Operasi yang digunakan: macOS
+4. Akun Gitlab/Github: https://github.com/newlighteagle
+5. Akun Telegram: @sofyanagussalim
+6. Bahasa Pemrograman/Stack Yang dikuasai: JavaScript (ReactJS, NextJS), php (CodeIgniter), Python (FastAPI)
