@@ -1,0 +1,62 @@
+Script ini memang ringkas dan langsung pada sasaran, tapi untuk penggunaan jangka panjang atau di lingkungan server, script ini memiliki beberapa "celah" yang cukup berisiko.
+
+Berikut adalah bedah kelemahan dan risiko dari script tersebut:
+
+1. Masalah "Overwriting" (Penimpaan Data)
+Script kamu menggunakan cp syslog.txt backup-log/. Setiap kali script dijalankan, file lama di folder backup-log akan langsung ditimpa oleh file baru.
+
+Risikonya: Kamu kehilangan riwayat log. Jika log hari ini rusak dan kamu menjalankan script, log kemarin yang masih bagus akan hilang selamanya.
+
+Solusi: Gunakan timestamp (stempel waktu) pada nama file.
+
+2. "Silent Failure" (Kegagalan Tanpa Notifikasi)
+Script ini sangat optimis. Ia berasumsi semua perintah pasti berhasil.
+
+Kelemannya: Jika file syslog.txt tidak ada, atau folder backup-log/ tidak bisa dibuat karena masalah izin (permission), script akan tetap menampilkan pesan "Backup selesai!". Ini menyesatkan.
+
+Solusi: Gunakan pengecekan kondisi (if) atau set -e agar script berhenti jika ada eror.
+
+3. Ketergantungan pada Path Relatif
+Kamu menggunakan mkdir -p backup-log. Perintah ini akan membuat folder di mana pun kamu berada saat mengeksekusi script.
+
+Kelemahannya: Jika kamu menjalankan script dari folder /home/user/ tapi script-nya ada di /opt/scripts/, folder backup-nya akan tercecer di lokasi yang salah.
+
+Solusi: Gunakan absolute path (jalur lengkap) atau definisikan variabel direktori di awal script.
+
+4. Tidak Ada Kompresi
+Log biasanya berisi teks yang sangat repetitif, yang artinya sangat mudah dikompres.
+
+Kelemahannya: Memindahkan file .txt mentah akan cepat memakan ruang penyimpanan (disk space).
+
+Solusi: Gunakan tar dengan kompresi gzip atau bzip2.
+
+Versi yang Lebih Tangguh (Improved Version)
+#!/bin/bash
+
+# 1. Definisi Variabel
+SOURCE_FILE="syslog.txt"
+BACKUP_DIR="/var/backups/logs" # Gunakan path absolut
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_NAME="syslog_$TIMESTAMP.tar.gz"
+
+# 2. Pastikan file sumber ada
+if [ ! -f "$SOURCE_FILE" ]; then
+    echo "Eror: File $SOURCE_FILE tidak ditemukan!"
+    exit 1
+fi
+
+# 3. Buat folder backup jika belum ada
+mkdir -p "$BACKUP_DIR"
+
+echo "Memulai backup log ke $BACKUP_NAME..."
+
+# 4. Backup dengan kompresi
+if tar -czf "$BACKUP_DIR/$BACKUP_NAME" "$SOURCE_FILE"; then
+    echo "Backup berhasil disimpan di $BACKUP_DIR/$BACKUP_NAME"
+else
+    echo "Eror: Gagal melakukan backup!"
+    exit 1
+fi
+
+Pendapat Saya : 
+Setuju, jika script ini digunakan untuk backup log sistem, maka script yang lebih tangguh seperti di atas akan lebih baik.
