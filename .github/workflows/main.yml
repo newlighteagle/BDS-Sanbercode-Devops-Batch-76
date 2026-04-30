@@ -1,0 +1,24 @@
+name: Tugas 13 CI-CD Core
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Test-Pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      # Langkah 1: Mengambil kode dari repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Langkah 2: Simulasi eksekusi dan panggil Secret
+      - name: Run Test Script
+        env:
+          MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
+        run: |
+          echo "Pipeline Berjalan Sukses di GitHub Actions!"
+          echo "Memeriksa secret key..."
+          # Nilai ini akan otomatis disensor oleh GitHub menjadi ***
+          echo "Secret Key: $MY_SECRET_KEY"
